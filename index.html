@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Library</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+        }
+        .card {
+            width: 300px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            background: #007bff;
+            color: #fff;
+            padding: 10px;
+            width: 100%;
+        }
+        .card-description {
+            font-size: 14px;
+            color: #555;
+            padding: 10px;
+        }
+        video {
+            width: 100%;
+            height: auto;
+            outline: none;
+            margin: 0;
+        }
+        @media screen and (max-width: 600px) {
+            .card {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        const apiEndpoint = "http://localhost:8080/movie-info/list";
+        const videoBaseURL = "http://localhost:8080/stream/with-id/";
+
+        async function fetchVideos() {
+            try {
+                const response = await fetch(apiEndpoint);
+                const videos = await response.json();
+                displayVideos(videos);
+            } catch (error) {
+                console.error("Error fetching video data:", error);
+            }
+        }
+
+        function displayVideos(videos) {
+            videos.forEach(video => {
+                const card = document.createElement("div");
+                card.className = "card";
+
+                const title = document.createElement("div");
+                title.className = "card-title";
+                title.textContent = video.name;
+
+                const videoElement = document.createElement("video");
+                videoElement.controls = true;
+                videoElement.src = `${videoBaseURL}${video.id}`;
+                videoElement.poster = `${videoBaseURL}${video.id}#t=2`;
+                videoElement.alt = `Video: ${video.name}`;
+
+                const description = document.createElement("div");
+                description.className = "card-description";
+                description.textContent = video.description;
+
+                card.appendChild(title);
+                card.appendChild(videoElement);
+                card.appendChild(description);
+
+                document.body.appendChild(card);
+            });
+        }
+
+        // Fetch and display videos on page load
+        fetchVideos();
+    </script>
+</body>
+</html>
+
